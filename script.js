@@ -94,7 +94,7 @@ const calcDisplaySummary = function (movements) {
   const withdrawal = movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${withdrawal}€`;
+  labelSumOut.textContent = `${Math.abs(withdrawal)}€`;
 };
 calcDisplaySummary(account1.movements);
 
