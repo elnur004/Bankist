@@ -85,6 +85,23 @@ const calcDisplayBalance = function (movement) {
 };
 calcDisplayBalance(account1.movements);
 
+const calcDisplaySummary = function (movements) {
+  const deposit = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${deposit}€`;
+};
+calcDisplaySummary(account1.movements);
+
+const calcDisplayWithdrews = function (movements) {
+  const withdrawal = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${withdrawal}€`;
+};
+
+calcDisplayWithdrews(account1.movements);
+
 const createUsernames = function (accs) {
   accs.forEach(
     acc =>
