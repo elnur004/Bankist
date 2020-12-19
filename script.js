@@ -78,9 +78,9 @@ const displayMovements = function (movements) {
   });
 };
 
-const calcDisplayBalance = function (movement) {
-  const balance = movement.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance}€`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
 
 const calcDisplaySummary = function (acc) {
@@ -115,6 +115,17 @@ const createUsernames = function (accs) {
 
 createUsernames(accounts);
 
+const updateUI = function (acc) {
+  // Display balance
+  calcDisplayBalance(acc);
+
+  // Display movements
+  displayMovements(acc.movements);
+
+  // Display summary
+  calcDisplaySummary(acc);
+};
+
 // Event Handler
 let currentAccount;
 btnLogin.addEventListener('click', function (e) {
@@ -134,18 +145,38 @@ btnLogin.addEventListener('click', function (e) {
     // Clear the input fields
     inputLoginUsername.value = inputLoginPin.value = '';
 
-    // Display balance
-    calcDisplayBalance(currentAccount.movements);
+    inputLoginPin.blur();
 
-    // Display movements
-    displayMovements(currentAccount.movements);
+    // Update UI
+    updateUI(currentAccount);
+  }
+});
 
-    // Display summary
-    calcDisplaySummary(currentAccount);
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    amount <= currentAccount.balance &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    // Doing the transfer
+    receiverAcc.movements.push(amount);
+    currentAccount.movements.push(-amount);
+
+    // Update UI
+    updateUI(currentAccount);
   }
 
-  inputLoginPin.blur();
+  // Clear the input fields
+  inputTransferTo.value = inputTransferAmount.value = '';
+  inputTransferAmount.blur();
 });
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 //
