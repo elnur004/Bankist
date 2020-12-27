@@ -4,7 +4,7 @@
 
 In this project practiced working with Arrays, Numbers, Dates, Timers and DOM
 
-For log to in: 
+For login: 
 ```
 users: js, jd, stw, ss
 
