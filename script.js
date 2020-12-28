@@ -52,6 +52,19 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+
+  movementsDates: [
+    '2019-01-01T13:15:33.035Z',
+    '2019-01-03T09:48:16.867Z',
+    '2019-02-05T06:04:23.907Z',
+    '2020-01-11T10:17:24.185Z',
+    '2020-03-29T14:11:59.604Z',
+    '2020-04-29T17:01:17.194Z',
+    '2020-09-11T23:36:17.929Z',
+    '2020-09-12T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'lt-LT',
 };
 
 const account4 = {
@@ -59,6 +72,20 @@ const account4 = {
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+
+  movementsDates: [
+    '2019-04-10T13:15:33.035Z',
+    '2019-02-15T09:48:16.867Z',
+    '2019-12-27T06:04:23.907Z',
+    '2020-01-01T10:17:24.185Z',
+    '2020-02-20T14:11:59.604Z',
+    '2020-05-29T17:01:17.194Z',
+    '2020-06-12T23:36:17.929Z',
+    '2020-08-17T10:51:36.790Z',
+  ],
+
+  currency: 'EUR',
+  locale: 'fr-FR',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -89,7 +116,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const formatDateMovements = function (date) {
+const formatDateMovements = function (date, locale) {
   const calcDaysPassed = (date1, date2) =>
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
 
@@ -99,10 +126,12 @@ const formatDateMovements = function (date) {
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
-  const day = `${date.getDate()}`.padStart(2, 0);
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  // const day = `${date.getDate()}`.padStart(2, 0);
+  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  // const year = date.getFullYear();
+  // return `${day}/${month}/${year}`;
+
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -116,7 +145,7 @@ const displayMovements = function (acc, sort = false) {
     const type = movement > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = formatDateMovements(date);
+    const displayDate = formatDateMovements(date, acc.locale);
 
     const html = `
       <div class="movements__row">
@@ -182,6 +211,12 @@ const updateUI = function (acc) {
 
 // Event Handler
 let currentAccount;
+
+// FAKE ALWAYS LOGGED IN
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
 btnLogin.addEventListener('click', function (e) {
   // Stop the default behaviour of 'form' element, prevent form from submitting
   e.preventDefault();
@@ -197,14 +232,31 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
 
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      weekday: 'long',
+    };
+
     // Create current date and time
+    // const locale = navigator.language;
+    // console.log(currentAccount.locale);
+
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const minutes = `${now.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year},  ${hour}:${minutes}`;
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
+    // const now = new Date();
+    // const day = `${now.getDate()}`.padStart(2, 0);
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const year = now.getFullYear();
+    // const hour = `${now.getHours()}`.padStart(2, 0);
+    // const minutes = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year},  ${hour}:${minutes}`;
 
     // Clear the input fields
     inputLoginUsername.value = inputLoginPin.value = '';
