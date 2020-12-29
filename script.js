@@ -134,6 +134,13 @@ const formatDateMovements = function (date, locale) {
   return new Intl.DateTimeFormat(locale).format(date);
 };
 
+const formatCurrency = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
+
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
@@ -147,13 +154,15 @@ const displayMovements = function (acc, sort = false) {
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatDateMovements(date, acc.locale);
 
+    const formatedMov = formatCurrency(movement, acc.locale, acc.currency);
+
     const html = `
       <div class="movements__row">
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
       <div class="movements__date">${displayDate}</div>
-        <div class="movements__value">${movement.toFixed(2)}€</div>
+        <div class="movements__value">${formatedMov}</div>
       </div>
 
     `;
@@ -163,26 +172,42 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  labelBalance.textContent = formatCurrency(
+    acc.balance,
+    acc.locale,
+    acc.currency
+  );
 };
+// labelBalance.textContent = `${acc.balance.toFixed(2)}€`;     // changed to formatCurrency();
 
 const calcDisplaySummary = function (acc) {
   const deposit = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${deposit.toFixed(2)}€`;
+  labelSumIn.textContent = formatCurrency(deposit, acc.locale, acc.currency);
+  // labelSumIn.textContent = `${deposit.toFixed(2)}€`;  // changed to formatCurrency();
 
   const withdrawal = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)}€`;
+  labelSumOut.textContent = formatCurrency(
+    Math.abs(withdrawal),
+    acc.locale,
+    acc.currency
+  );
+  // labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)}€`;   // changed to formatCurrency();
 
   const interest = acc.movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, intrst) => acc + intrst, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCurrency(
+    interest,
+    acc.locale,
+    acc.currency
+  );
+  // labelSumInterest.textContent = `${interest.toFixed(2)}€`;  // changed to formatCurrency();
 };
 
 const createUsernames = function (accs) {
