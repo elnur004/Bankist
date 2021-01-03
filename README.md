@@ -1,10 +1,11 @@
 # Bankist
 
-## This project created through the course by Jonas Schmedtmann in UDEMY
+## This project created through the course by Jonas Schmedtmann on UDEMY
 
 In this project practiced working with Arrays, Numbers, Dates, Timers and DOM
 
-For login: 
+For login:
+
 ```
 users: js, jd, stw, ss
 
